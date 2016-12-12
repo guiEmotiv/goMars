@@ -3,6 +3,12 @@
 
 from PyQt4 import QtGui, QtCore
 import sys
+import serial, time
+#from functools import partial
+
+arduino = serial.Serial("/dev/cu.usbmodem17", 9600)
+time.sleep(0.3)
+
 class ventanaPrincipal(QtGui.QWidget):
 
     def __init__(self,parent=None):
@@ -30,11 +36,13 @@ class ventanaPrincipal(QtGui.QWidget):
         self.logoTemp.resize(50,50)
 
         self.lcdAutoTemp = QtGui.QLCDNumber(self)
+        self.lcdAutoTemp.display(self.serial())
         self.lcdTemp = QtGui.QLCDNumber(self)
         self.sldTemp = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         self.sldTemp.valueChanged.connect(self.lcdTemp.display)
 
         self.valvulaAutoTemp = QtGui.QRadioButton("Valor del Sensor")
+
         self.valvulaOnTemp = QtGui.QRadioButton("Valvula ON")
         self.valvulaOffTemp = QtGui.QRadioButton("Valvula OFF")
 
@@ -164,7 +172,10 @@ class ventanaPrincipal(QtGui.QWidget):
         self.logoO2.move(50, 50)
         self.logoO2.adjustSize()
 
-        self.senTemp1 = QtGui.QPushButton("Sensor de Temp 1")
+        self.senTemp1 = QtGui.QPushButton('Sensor de Temp 1',self)
+        self.senTemp1.clicked[bool].connect(self.pushSenTemp1)
+        self.senTemp1.setCheckable(True)
+
         self.senTemp2 = QtGui.QPushButton("Sensor de Temp 2")
         self.senTemp3 = QtGui.QPushButton("Sensor de Temp 3")
 
@@ -177,9 +188,41 @@ class ventanaPrincipal(QtGui.QWidget):
         self.groupbox.setLayout(vbox)
         return self.groupbox
 
+    def serial(self):
+
+        self.arduino = serial.Serial('/dev/cu.usbmodem17', 9600)
+        self.arduino.setDTR(False)
+        time.sleep(0.3)
+
+        self.arduino.flushInput()
+        self.arduino.setDTR()
+        time.sleep(0.3)
+
+        self.rawString = self.arduino.readline().replace("\r", '').replace("\n", '')
+        print self.rawString
+
+        return self.rawString
+
+    def pushSenTemp1(self, pressed):
+
+        source = self.sender()
+        if pressed:
+            val = 'Y'
+        else:
+            val = 'N'
+        if source.setText('Sensor de Temp 1'):
+            arduino.write(val)
+        else:
+            arduino.write(val)
+
+
+
+
+
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     clock = ventanaPrincipal()
     clock.show()
     sys.exit(app.exec_())
+
