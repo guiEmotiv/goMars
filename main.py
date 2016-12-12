@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui, QtCore
-
+import sys
 class ventanaPrincipal(QtGui.QWidget):
 
     def __init__(self,parent=None):
@@ -17,7 +17,7 @@ class ventanaPrincipal(QtGui.QWidget):
         grid.addWidget(self.gridIsometrico(),1,2)
         self.setLayout(grid)
 
-        self.setWindowTitle("INTERFACE MARCIANO")
+        self.setWindowTitle("Software de Control de Clima Marciano v1.0")
         self.resize(1280,900)
 
     def gridTemperatura(self):
@@ -164,16 +164,20 @@ class ventanaPrincipal(QtGui.QWidget):
         self.logoO2.move(50, 50)
         self.logoO2.adjustSize()
 
+        self.senTemp1 = QtGui.QPushButton("Sensor de Temp 1")
+        self.senTemp2 = QtGui.QPushButton("Sensor de Temp 2")
+        self.senTemp3 = QtGui.QPushButton("Sensor de Temp 3")
+
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(self.logoO2)
-        vbox.addStretch(1)
+        vbox.addWidget(self.senTemp1)
+        vbox.addWidget(self.senTemp2)
+        vbox.addWidget(self.senTemp3)
+        vbox.addStretch(0)
         self.groupbox.setLayout(vbox)
         return self.groupbox
 
-
 if __name__ == '__main__':
-
-    import sys
 
     app = QtGui.QApplication(sys.argv)
     clock = ventanaPrincipal()
